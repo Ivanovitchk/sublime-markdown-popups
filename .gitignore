@@ -59,3 +59,5 @@ target/
 site/*
 *.patch
 dictionary.bin
+
+*.sublime-workspace

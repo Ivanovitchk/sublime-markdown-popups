@@ -221,6 +221,8 @@ class SublimeHighlight(object):
     def set_view(self, src, lang):
         """Setup view for conversion."""
 
+        print("\n---------- st_code_highlight.py -> set_view() ----------")
+
         # Get the output panel
         self.view = sublime.active_window().create_output_panel('mdpopups', unlisted=True)
         # Let all plugins no to leave this view alone
@@ -233,20 +235,40 @@ class SublimeHighlight(object):
         self.view.run_command('insert', {'characters': src})
         # Setup the proper syntax
         lang = lang.lower()
+
+        print("-> called with lang =", lang, "\n")
+
         user_map = sublime.load_settings('Preferences.sublime-settings').get('mdpopups.sublime_user_lang_map', {})
+        # print("usr map=", user_map)
+
         keys = set(list(user_map.keys()) + list(lang_map.keys()))
+        # print(list(lang_map.keys())) # native ST lang indexes
+        # print("keys = ", keys) # merged user + native
+
         loaded = False
         for key in keys:
             v = lang_map.get(key, (tuple(), tuple()))
             user_v = user_map.get(key, (tuple(), tuple()))
+
+            # print("K =", key, "U = ", user_v, " ST = ", v)
+
             if lang in (tuple(user_v[0]) + v[0]):
+                print("K  = ", key)
+                print("U  = ", user_v)
+                print("ST = ", v)
+
                 for l in (tuple(user_v[1]) + v[1]):
+                    print("\n L =", l)
+
                     for ext in ST_LANGUAGES:
                         sytnax_file = 'Packages/%s%s' % (l, ext)
+
                         try:
                             sublime.load_binary_resource(sytnax_file)
                         except Exception:
                             continue
+
+                        print("loaded syntax file", sytnax_file)
                         self.view.set_syntax_file(sytnax_file)
                         loaded = True
                         break
@@ -256,6 +278,7 @@ class SublimeHighlight(object):
                 break
         if not loaded:
             # Default to plain text
+            print("no syntax found -> defaulting to text")
             for ext in ST_LANGUAGES:
                 # Just in case text one day switches to 'sublime-syntax'
                 sytnax_file = 'Packages/Plain text%s' % ext
@@ -264,6 +287,10 @@ class SublimeHighlight(object):
                 except Exception:
                     continue
                 self.view.set_syntax_file(sytnax_file)
+
+        # self.view.set_syntax_file("Packages/SublimeCImproved_VNR/C Improved.tmLanguage")
+        print("\n -> final syntax file = ", sytnax_file)
+        print("\n-----------------------------------------------------------\n")
 
     def syntax_highlight(self, src, lang, hl_lines=[], inline=False, no_wrap=False, code_wrap=False):
         """Syntax Highlight."""

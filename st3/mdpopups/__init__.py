@@ -316,6 +316,7 @@ def _create_html(
         _debug(style, INFO)
 
     if md:
+        print("is MD format")
         content = md2html(
             view, content, template_vars=template_vars,
             template_env_options=template_env_options, nl2br=nl2br,
@@ -371,6 +372,7 @@ def md2html(
     """Convert Markdown to HTML."""
 
     if _get_setting('mdpopups.use_sublime_highlighter'):
+        print("is highlighted")
         sublime_hl = (True, _get_sublime_highlighter(view))
     else:
         sublime_hl = (False, None)
@@ -603,6 +605,8 @@ def show_popup(
     allow_code_wrap=False
 ):
     """Parse the color scheme if needed and show the styled pop-up."""
+
+    print("popup spawned")
 
     disabled = _get_setting('mdpopups.disable', False)
     if disabled:
